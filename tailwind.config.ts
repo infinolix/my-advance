@@ -1,3 +1,4 @@
+
 import type { Config } from "tailwindcss";
 
 export default {
@@ -6,7 +7,7 @@ export default {
 		"./pages/**/*.{ts,tsx}",
 		"./components/**/*.{ts,tsx}",
 		"./app/**/*.{ts,tsx}",
-		"./src/**/*.{ts,tsx}",
+		"./src/**/*.{ts,tsx,jsx,js}",
 	],
 	prefix: "",
 	theme: {
@@ -61,6 +62,16 @@ export default {
 					'accent-foreground': 'hsl(var(--sidebar-accent-foreground))',
 					border: 'hsl(var(--sidebar-border))',
 					ring: 'hsl(var(--sidebar-ring))'
+				},
+				advance: {
+					purple: "#9b87f5",
+					"dark-purple": "#7E69AB",
+					"light-purple": "#D6BCFA",
+					"vivid-purple": "#8B5CF6",
+					red: "#ea384c",
+					"neutral-gray": "#8E9196",
+					"dark-gray": "#1A1F2C",
+					"light-gray": "#F1F0FB",
 				}
 			},
 			borderRadius: {
