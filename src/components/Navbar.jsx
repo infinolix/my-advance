@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
@@ -8,7 +7,7 @@ const Navbar = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   return (
-    <nav className="bg-white shadow">
+    <nav className="bg-white shadow fixed w-full z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-16">
           <div className="flex">
@@ -64,6 +63,12 @@ const Navbar = () => {
                   className="px-4 py-2 text-sm font-medium text-advance-purple bg-white hover:bg-advance-purple hover:text-white border border-advance-purple rounded-md transition-colors duration-300"
                 >
                   Login
+                </Link>
+                <Link
+                  to="/signup"
+                  className="px-4 py-2 text-sm font-medium text-white bg-advance-purple hover:bg-advance-dark-purple border border-advance-purple rounded-md transition-colors duration-300"
+                >
+                  Register Now
                 </Link>
               </div>
             )}

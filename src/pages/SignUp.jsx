@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
@@ -16,6 +15,7 @@ const SignUp = () => {
   const [pan, setPan] = useState('');
   const [salary, setSalary] = useState('');
   const [email, setEmail] = useState('');
+  const [mobile, setMobile] = useState('');
   const [password, setPassword] = useState('');
   const [confirm, setConfirm] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -25,7 +25,7 @@ const SignUp = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
-    if (!name || !department || !position || !pan || !email || !password || !confirm) {
+    if (!name || !department || !position || !pan || !email || !password || !confirm || !mobile) {
       toast.error('Please fill all required fields');
       setIsLoading(false);
       return;
@@ -36,7 +36,6 @@ const SignUp = () => {
       return;
     }
 
-    // Example: set role as employee and include salary only if filled
     const userData = {
       name,
       email,
@@ -44,13 +43,13 @@ const SignUp = () => {
       department,
       position,
       pan,
+      mobile,
       role: 'employee'
     };
     if (salary) {
       userData.salary = Number(salary);
     }
 
-    // Register and redirect if successful
     const success = register(userData);
     setIsLoading(false);
     if (success) {
@@ -60,7 +59,7 @@ const SignUp = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 pt-16">
       <div className="flex flex-col items-center justify-center px-6 py-8 mx-auto md:h-[calc(100vh-4rem)]">
         <div className="w-full bg-white rounded-lg shadow max-w-md card-shadow">
           <div className="p-6 space-y-6">
@@ -140,6 +139,19 @@ const SignUp = () => {
                   placeholder="name@company.com"
                   value={email}
                   onChange={e => setEmail(e.target.value)}
+                  required
+                />
+              </div>
+              <div>
+                <label htmlFor="mobile" className="block mb-2 text-sm font-medium text-gray-900">Mobile Number <span className="text-red-500">*</span></label>
+                <input
+                  id="mobile"
+                  type="tel"
+                  pattern="[0-9]{10}"
+                  className="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-advance-purple focus:border-advance-purple block w-full p-2.5"
+                  placeholder="Enter 10-digit mobile number"
+                  value={mobile}
+                  onChange={e => setMobile(e.target.value)}
                   required
                 />
               </div>
