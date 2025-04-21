@@ -1,10 +1,16 @@
+
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import { useAuth } from '../context/AuthContext';
 
 const Index = () => {
   const { user } = useAuth();
+  const navigate = useNavigate();
+  
+  const handleGetStarted = () => {
+    navigate('/signup');
+  };
   
   return (
     <div className="min-h-screen bg-white">
@@ -35,12 +41,12 @@ const Index = () => {
                 </p>
                 <div className="mt-5 sm:mt-8 sm:flex sm:justify-center lg:justify-start">
                   <div className="rounded-md shadow">
-                    <Link
-                      to="/signup"
+                    <button
+                      onClick={handleGetStarted}
                       className="w-full flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-md text-white advance-gradient hover:opacity-90 md:py-4 md:text-lg md:px-10"
                     >
                       Get Started
-                    </Link>
+                    </button>
                   </div>
                   <div className="mt-3 sm:mt-0 sm:ml-3">
                     <a
