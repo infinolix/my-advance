@@ -1,8 +1,8 @@
 
-
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { toast } from "sonner";
 
 const formatINR = (value) => {
   if (!value) return '';
@@ -26,12 +26,12 @@ const SignUp = () => {
     e.preventDefault();
     setIsLoading(true);
     if (!name || !department || !position || !pan || !email || !password || !confirm) {
-      alert('Please fill all fields');
+      toast.error('Please fill all required fields');
       setIsLoading(false);
       return;
     }
     if (password !== confirm) {
-      alert('Passwords do not match');
+      toast.error('Passwords do not match');
       setIsLoading(false);
       return;
     }
@@ -54,6 +54,7 @@ const SignUp = () => {
     const success = register(userData);
     setIsLoading(false);
     if (success) {
+      toast.success('Account created successfully');
       navigate('/dashboard');
     }
   };
@@ -66,7 +67,7 @@ const SignUp = () => {
             <h1 className="text-xl font-bold tracking-tight text-gray-900 md:text-2xl text-center">Create Your Account</h1>
             <form className="space-y-6" onSubmit={handleSubmit}>
               <div>
-                <label htmlFor="name" className="block mb-2 text-sm font-medium text-gray-900">Full Name</label>
+                <label htmlFor="name" className="block mb-2 text-sm font-medium text-gray-900">Full Name <span className="text-red-500">*</span></label>
                 <input
                   id="name"
                   type="text"
@@ -78,7 +79,7 @@ const SignUp = () => {
                 />
               </div>
               <div>
-                <label htmlFor="department" className="block mb-2 text-sm font-medium text-gray-900">Department</label>
+                <label htmlFor="department" className="block mb-2 text-sm font-medium text-gray-900">Department <span className="text-red-500">*</span></label>
                 <input
                   id="department"
                   type="text"
@@ -90,7 +91,7 @@ const SignUp = () => {
                 />
               </div>
               <div>
-                <label htmlFor="position" className="block mb-2 text-sm font-medium text-gray-900">Position</label>
+                <label htmlFor="position" className="block mb-2 text-sm font-medium text-gray-900">Position <span className="text-red-500">*</span></label>
                 <input
                   id="position"
                   type="text"
@@ -102,7 +103,7 @@ const SignUp = () => {
                 />
               </div>
               <div>
-                <label htmlFor="pan" className="block mb-2 text-sm font-medium text-gray-900">PAN Number</label>
+                <label htmlFor="pan" className="block mb-2 text-sm font-medium text-gray-900">PAN Number <span className="text-red-500">*</span></label>
                 <input
                   id="pan"
                   type="text"
@@ -131,7 +132,7 @@ const SignUp = () => {
                 )}
               </div>
               <div>
-                <label htmlFor="email" className="block mb-2 text-sm font-medium text-gray-900">Email</label>
+                <label htmlFor="email" className="block mb-2 text-sm font-medium text-gray-900">Email <span className="text-red-500">*</span></label>
                 <input
                   id="email"
                   type="email"
@@ -143,7 +144,7 @@ const SignUp = () => {
                 />
               </div>
               <div>
-                <label htmlFor="password" className="block mb-2 text-sm font-medium text-gray-900">Password</label>
+                <label htmlFor="password" className="block mb-2 text-sm font-medium text-gray-900">Password <span className="text-red-500">*</span></label>
                 <input
                   id="password"
                   type="password"
@@ -154,7 +155,7 @@ const SignUp = () => {
                 />
               </div>
               <div>
-                <label htmlFor="confirm" className="block mb-2 text-sm font-medium text-gray-900">Confirm Password</label>
+                <label htmlFor="confirm" className="block mb-2 text-sm font-medium text-gray-900">Confirm Password <span className="text-red-500">*</span></label>
                 <input
                   id="confirm"
                   type="password"
@@ -186,4 +187,3 @@ const SignUp = () => {
 };
 
 export default SignUp;
-
