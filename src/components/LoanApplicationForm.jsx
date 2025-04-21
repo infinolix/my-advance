@@ -9,36 +9,41 @@ const LoanApplicationForm = ({ onSubmit }) => {
   const [duration, setDuration] = useState(1);
   const [purpose, setPurpose] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  
+
   // Calculate max eligible amount (50% of monthly salary)
   const maxEligibleAmount = user?.salary ? user.salary * 0.5 : 0;
-  
+
   // Calculate estimated monthly payment (simple calculation)
   const estimatedPayment = amount ? parseFloat(amount) / duration : 0;
-  
+
+  const formatINRCurrency = (value) => 
+    value ? Number(value).toLocaleString("en-IN", { style: "currency", currency: "INR" }) : "₹0.00";
+
   const handleSubmit = (e) => {
     e.preventDefault();
     setIsLoading(true);
-    
+
     // Validate form
     if (!amount || parseFloat(amount) <= 0) {
       toast.error('Please enter a valid loan amount');
       setIsLoading(false);
       return;
     }
-    
+
     if (parseFloat(amount) > maxEligibleAmount) {
-      toast.error(`Loan amount cannot exceed your maximum eligible amount of $${maxEligibleAmount}`);
+      toast.error(
+        `Loan amount cannot exceed your maximum eligible amount of ${formatINRCurrency(maxEligibleAmount)}`
+      );
       setIsLoading(false);
       return;
     }
-    
+
     if (!purpose.trim()) {
       toast.error('Please provide a purpose for the loan');
       setIsLoading(false);
       return;
     }
-    
+
     // Create loan application object
     const loanApplication = {
       id: Date.now().toString(),
@@ -51,37 +56,37 @@ const LoanApplicationForm = ({ onSubmit }) => {
       applicationDate: new Date().toISOString(),
       monthlyPayment: estimatedPayment,
     };
-    
+
     // Call parent's onSubmit function
     onSubmit(loanApplication);
-    
+
     // Reset form
     setAmount('');
     setDuration(1);
     setPurpose('');
     setIsLoading(false);
-    
+
     toast.success('Loan application submitted successfully!');
   };
-  
+
   return (
     <div className="bg-white p-6 rounded-lg shadow-md">
       <h2 className="text-xl font-semibold mb-4">Apply for Salary Advance</h2>
-      
+
       <div className="mb-6 p-4 bg-blue-50 rounded-md">
         <h3 className="font-medium text-blue-800">Loan Eligibility</h3>
         <p className="text-sm text-blue-600 mt-1">
-          Based on your monthly salary (${user?.salary || 0}), you are eligible for an advance up to:
+          Based on your monthly salary ({formatINRCurrency(user?.salary || 0)}), you are eligible for an advance up to:
         </p>
         <p className="text-2xl font-bold text-blue-800 mt-2">
-          ${maxEligibleAmount.toFixed(2)}
+          {formatINRCurrency(maxEligibleAmount)}
         </p>
       </div>
-      
+
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
           <label htmlFor="amount" className="block text-sm font-medium text-gray-700 mb-1">
-            Loan Amount ($)
+            Loan Amount (INR)
           </label>
           <input
             type="number"
@@ -95,7 +100,7 @@ const LoanApplicationForm = ({ onSubmit }) => {
             required
           />
         </div>
-        
+
         <div>
           <label htmlFor="duration" className="block text-sm font-medium text-gray-700 mb-1">
             Repayment Duration (months)
@@ -114,7 +119,7 @@ const LoanApplicationForm = ({ onSubmit }) => {
             ))}
           </select>
         </div>
-        
+
         <div>
           <label htmlFor="purpose" className="block text-sm font-medium text-gray-700 mb-1">
             Purpose of Loan
@@ -129,23 +134,23 @@ const LoanApplicationForm = ({ onSubmit }) => {
             required
           ></textarea>
         </div>
-        
+
         {amount && (
           <div className="mt-4 p-4 bg-gray-50 rounded-md">
             <h3 className="font-medium">Payment Summary</h3>
             <div className="grid grid-cols-2 gap-2 mt-2">
               <div className="text-sm text-gray-500">Loan Amount:</div>
-              <div className="text-sm font-medium">${parseFloat(amount).toFixed(2)}</div>
-              
+              <div className="text-sm font-medium">{formatINRCurrency(amount)}</div>
+
               <div className="text-sm text-gray-500">Duration:</div>
               <div className="text-sm font-medium">{duration} {duration === 1 ? 'month' : 'months'}</div>
-              
+
               <div className="text-sm text-gray-500">Monthly Payment:</div>
-              <div className="text-sm font-medium">${estimatedPayment.toFixed(2)}</div>
+              <div className="text-sm font-medium">{formatINRCurrency(estimatedPayment)}</div>
             </div>
           </div>
         )}
-        
+
         <div className="pt-4">
           <button
             type="submit"

@@ -18,6 +18,9 @@ const AdminLoanTable = ({ loans, updateLoanStatus }) => {
     });
   };
 
+  const formatINRCurrency = (value) => 
+    value ? Number(value).toLocaleString("en-IN", { style: "currency", currency: "INR" }) : "₹0.00";
+
   const getStatusBadge = (status) => {
     const statusStyles = {
       pending: "bg-yellow-100 text-yellow-800",
@@ -49,7 +52,7 @@ const AdminLoanTable = ({ loans, updateLoanStatus }) => {
 
   const handleAction = () => {
     if (!selectedLoan) return;
-    
+
     if (modalAction === 'approve') {
       updateLoanStatus(selectedLoan.id, 'approved');
       toast.success(`Loan application for ${selectedLoan.employeeName} approved successfully!`);
@@ -58,20 +61,20 @@ const AdminLoanTable = ({ loans, updateLoanStatus }) => {
         toast.error('Please provide a reason for rejection');
         return;
       }
-      
+
       updateLoanStatus(selectedLoan.id, 'rejected', rejectReason);
       toast.success(`Loan application for ${selectedLoan.employeeName} rejected`);
     }
-    
+
     closeModal();
   };
-  
+
   // Filter to show only pending loans first
   const sortedLoans = [...loans].sort((a, b) => {
     // Sort by status (pending first)
     if (a.status === 'pending' && b.status !== 'pending') return -1;
     if (a.status !== 'pending' && b.status === 'pending') return 1;
-    
+
     // Then sort by date (newest first)
     return new Date(b.applicationDate) - new Date(a.applicationDate);
   });
@@ -114,7 +117,7 @@ const AdminLoanTable = ({ loans, updateLoanStatus }) => {
                     {formatDate(loan.applicationDate)}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm font-medium text-gray-900">${loan.amount.toFixed(2)}</div>
+                    <div className="text-sm font-medium text-gray-900">{formatINRCurrency(loan.amount)}</div>
                     <div className="text-xs text-gray-500">{loan.duration} {loan.duration === 1 ? 'month' : 'months'}</div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
@@ -186,7 +189,7 @@ const AdminLoanTable = ({ loans, updateLoanStatus }) => {
                       </h3>
                       <div className="mt-2">
                         <p className="text-sm text-gray-500">
-                          Are you sure you want to approve the loan application for {selectedLoan.employeeName} for ${selectedLoan.amount.toFixed(2)}?
+                          Are you sure you want to approve the loan application for {selectedLoan.employeeName} for {formatINRCurrency(selectedLoan.amount)}?
                         </p>
                       </div>
                     </div>

@@ -21,6 +21,9 @@ const LoanHistoryTable = ({ loans, title = "Loan History" }) => {
     });
   };
 
+  const formatINRCurrency = (value) => 
+    value ? Number(value).toLocaleString("en-IN", { style: "currency", currency: "INR" }) : "₹0.00";
+
   const getStatusBadge = (status) => {
     const statusStyles = {
       pending: "bg-yellow-100 text-yellow-800",
@@ -40,7 +43,7 @@ const LoanHistoryTable = ({ loans, title = "Loan History" }) => {
   return (
     <div className="bg-white p-6 rounded-lg shadow-md">
       <h2 className="text-xl font-semibold mb-4">{title}</h2>
-      
+
       <div className="overflow-x-auto">
         <table className="min-w-full divide-y divide-gray-200">
           <thead className="bg-gray-50">
@@ -69,7 +72,7 @@ const LoanHistoryTable = ({ loans, title = "Loan History" }) => {
                   {formatDate(loan.applicationDate)}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                  ${loan.amount.toFixed(2)}
+                  {formatINRCurrency(loan.amount)}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                   {loan.duration} {loan.duration === 1 ? 'month' : 'months'}
@@ -78,7 +81,7 @@ const LoanHistoryTable = ({ loans, title = "Loan History" }) => {
                   {getStatusBadge(loan.status)}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                  ${loan.monthlyPayment.toFixed(2)}
+                  {formatINRCurrency(loan.monthlyPayment)}
                 </td>
               </tr>
             ))}
