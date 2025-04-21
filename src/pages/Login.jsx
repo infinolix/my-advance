@@ -97,6 +97,14 @@ const Login = () => {
               >
                 {isLoading ? 'Please wait...' : 'Sign in'}
               </button>
+              <div className="flex justify-between items-center mt-4">
+                <Link to="/signup" className="text-sm text-advance-purple hover:underline">
+                  Create an account
+                </Link>
+                <Link to="/forgot-password" className="text-sm text-advance-purple hover:underline">
+                  Forgot password?
+                </Link>
+              </div>
             </form>
           </div>
         </div>
