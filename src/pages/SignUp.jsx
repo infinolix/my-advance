@@ -1,4 +1,5 @@
 
+
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
@@ -10,11 +11,13 @@ const formatINR = (value) => {
 
 const SignUp = () => {
   const [name, setName] = useState('');
+  const [department, setDepartment] = useState('');
+  const [position, setPosition] = useState('');
+  const [pan, setPan] = useState('');
+  const [salary, setSalary] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirm, setConfirm] = useState('');
-  const [salary, setSalary] = useState('');
-  const [showSalary, setShowSalary] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const { register } = useAuth();
   const navigate = useNavigate();
@@ -22,7 +25,7 @@ const SignUp = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
-    if (!name || !email || !password || !confirm) {
+    if (!name || !department || !position || !pan || !email || !password || !confirm) {
       alert('Please fill all fields');
       setIsLoading(false);
       return;
@@ -34,8 +37,16 @@ const SignUp = () => {
     }
 
     // Example: set role as employee and include salary only if filled
-    const userData = { name, email, password, role: 'employee' };
-    if (showSalary && salary) {
+    const userData = {
+      name,
+      email,
+      password,
+      department,
+      position,
+      pan,
+      role: 'employee'
+    };
+    if (salary) {
       userData.salary = Number(salary);
     }
 
@@ -65,6 +76,59 @@ const SignUp = () => {
                   onChange={e => setName(e.target.value)}
                   required
                 />
+              </div>
+              <div>
+                <label htmlFor="department" className="block mb-2 text-sm font-medium text-gray-900">Department</label>
+                <input
+                  id="department"
+                  type="text"
+                  className="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-advance-purple focus:border-advance-purple block w-full p-2.5"
+                  placeholder="Department"
+                  value={department}
+                  onChange={e => setDepartment(e.target.value)}
+                  required
+                />
+              </div>
+              <div>
+                <label htmlFor="position" className="block mb-2 text-sm font-medium text-gray-900">Position</label>
+                <input
+                  id="position"
+                  type="text"
+                  className="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-advance-purple focus:border-advance-purple block w-full p-2.5"
+                  placeholder="Position"
+                  value={position}
+                  onChange={e => setPosition(e.target.value)}
+                  required
+                />
+              </div>
+              <div>
+                <label htmlFor="pan" className="block mb-2 text-sm font-medium text-gray-900">PAN Number</label>
+                <input
+                  id="pan"
+                  type="text"
+                  className="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-advance-purple focus:border-advance-purple block w-full p-2.5"
+                  placeholder="PAN Number"
+                  value={pan}
+                  onChange={e => setPan(e.target.value)}
+                  required
+                />
+              </div>
+              <div>
+                <label htmlFor="salary" className="block mb-2 text-sm font-medium text-gray-900">Monthly Salary (INR)</label>
+                <input
+                  id="salary"
+                  type="number"
+                  min="0"
+                  className="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-advance-purple focus:border-advance-purple block w-full p-2.5"
+                  placeholder="e.g. 40000"
+                  value={salary}
+                  onChange={e => setSalary(e.target.value.replace(/[^\d]/g, ""))}
+                />
+                {salary && (
+                  <span className="text-sm text-green-600 font-semibold">
+                    {formatINR(salary)}
+                  </span>
+                )}
               </div>
               <div>
                 <label htmlFor="email" className="block mb-2 text-sm font-medium text-gray-900">Email</label>
@@ -100,34 +164,6 @@ const SignUp = () => {
                   required
                 />
               </div>
-              <div className="flex items-center space-x-2">
-                <input
-                  type="checkbox"
-                  id="with-salary"
-                  checked={showSalary}
-                  onChange={() => setShowSalary(!showSalary)}
-                />
-                <label htmlFor="with-salary" className="text-sm text-gray-700">Include Monthly Salary?</label>
-              </div>
-              {showSalary && (
-                <div>
-                  <label htmlFor="salary" className="block mb-2 text-sm font-medium text-gray-900">Monthly Salary (INR)</label>
-                  <input
-                    id="salary"
-                    type="number"
-                    min="0"
-                    className="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-advance-purple focus:border-advance-purple block w-full p-2.5"
-                    placeholder="e.g. 40000"
-                    value={salary}
-                    onChange={e => setSalary(e.target.value.replace(/[^\d]/g, ""))}
-                  />
-                  {salary && (
-                    <span className="text-sm text-green-600 font-semibold">
-                      {formatINR(salary)}
-                    </span>
-                  )}
-                </div>
-              )}
               <button
                 type="submit"
                 disabled={isLoading}
@@ -150,3 +186,4 @@ const SignUp = () => {
 };
 
 export default SignUp;
+
