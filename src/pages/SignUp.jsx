@@ -3,13 +3,9 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { toast } from "sonner";
-import { Form } from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-
-const formatINR = (value) => {
-  if (!value) return '';
-  return new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 }).format(Number(value));
-};
+import AccountCredentials from '../components/signup/AccountCredentials';
+import MobileInput from '../components/signup/MobileInput';
+import SalaryInput from '../components/signup/SalaryInput';
 
 const SignUp = () => {
   const [name, setName] = useState('');
@@ -19,9 +15,6 @@ const SignUp = () => {
   const [mobile, setMobile] = useState('');
   const [includeSalary, setIncludeSalary] = useState(false);
   const [salary, setSalary] = useState('');
-  const [department, setDepartment] = useState('');
-  const [position, setPosition] = useState('');
-  const [pan, setPan] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const { register } = useAuth();
   const navigate = useNavigate();
@@ -29,11 +22,13 @@ const SignUp = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
+    
     if (!name || !email || !password || !confirm || !mobile) {
       toast.error('Please fill all required fields');
       setIsLoading(false);
       return;
     }
+    
     if (password !== confirm) {
       toast.error('Passwords do not match');
       setIsLoading(false);
@@ -48,9 +43,6 @@ const SignUp = () => {
       role: 'employee'
     };
     
-    if (department) userData.department = department;
-    if (position) userData.position = position;
-    if (pan) userData.pan = pan;
     if (includeSalary && salary) {
       userData.salary = Number(salary);
     }
@@ -69,63 +61,21 @@ const SignUp = () => {
         <h1 className="text-2xl font-bold text-center">Create Your Account</h1>
         
         <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <label htmlFor="name" className="block mb-2 text-sm font-medium">Full Name</label>
-            <Input
-              id="name"
-              type="text"
-              placeholder="Your name"
-              value={name}
-              onChange={e => setName(e.target.value)}
-              required
-            />
-          </div>
+          <AccountCredentials
+            name={name}
+            email={email}
+            password={password}
+            confirm={confirm}
+            onNameChange={setName}
+            onEmailChange={setEmail}
+            onPasswordChange={setPassword}
+            onConfirmChange={setConfirm}
+          />
           
-          <div>
-            <label htmlFor="email" className="block mb-2 text-sm font-medium">Email</label>
-            <Input
-              id="email"
-              type="email"
-              placeholder="name@company.com"
-              value={email}
-              onChange={e => setEmail(e.target.value)}
-              required
-            />
-          </div>
-          
-          <div>
-            <label htmlFor="password" className="block mb-2 text-sm font-medium">Password</label>
-            <Input
-              id="password"
-              type="password"
-              value={password}
-              onChange={e => setPassword(e.target.value)}
-              required
-            />
-          </div>
-          
-          <div>
-            <label htmlFor="confirm" className="block mb-2 text-sm font-medium">Confirm Password</label>
-            <Input
-              id="confirm"
-              type="password"
-              value={confirm}
-              onChange={e => setConfirm(e.target.value)}
-              required
-            />
-          </div>
-          
-          <div>
-            <label htmlFor="mobile" className="block mb-2 text-sm font-medium">Mobile Number</label>
-            <Input
-              id="mobile"
-              type="tel"
-              placeholder="Enter 10-digit mobile number"
-              value={mobile}
-              onChange={e => setMobile(e.target.value)}
-              required
-            />
-          </div>
+          <MobileInput
+            mobile={mobile}
+            onMobileChange={setMobile}
+          />
 
           <div className="flex items-center">
             <input
@@ -140,24 +90,11 @@ const SignUp = () => {
             </label>
           </div>
 
-          {includeSalary && (
-            <div>
-              <label htmlFor="salary" className="block mb-2 text-sm font-medium">Monthly Salary (INR)</label>
-              <Input
-                id="salary"
-                type="number"
-                min="0"
-                placeholder="e.g. 40000"
-                value={salary}
-                onChange={e => setSalary(e.target.value.replace(/[^\d]/g, ""))}
-              />
-              {salary && (
-                <span className="text-sm text-green-600 font-semibold">
-                  {formatINR(salary)}
-                </span>
-              )}
-            </div>
-          )}
+          <SalaryInput
+            includeSalary={includeSalary}
+            salary={salary}
+            onSalaryChange={setSalary}
+          />
           
           <button
             type="submit"
