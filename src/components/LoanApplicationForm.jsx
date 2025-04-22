@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { toast } from 'sonner';
+import { formatINRCurrency } from '../utils/formatters';
 
 const LoanApplicationForm = ({ onSubmit }) => {
   const { user } = useAuth();

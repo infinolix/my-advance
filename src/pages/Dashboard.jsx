@@ -1,9 +1,15 @@
-import React, { useState, useEffect } from 'react';
+
+import React, { useState } from 'react';
 import { Navigate } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import LoanApplicationForm from '../components/LoanApplicationForm';
 import LoanHistoryTable from '../components/LoanHistoryTable';
+import UserProfileCard from '../components/dashboard/UserProfileCard';
+import DashboardNavigation from '../components/dashboard/DashboardNavigation';
+import DashboardStats from '../components/dashboard/DashboardStats';
+import QuickApplyCard from '../components/dashboard/QuickApplyCard';
 import { useAuth } from '../context/AuthContext';
+import { formatINRCurrency } from '../utils/formatters';
 
 const initialLoans = [
   {
@@ -47,14 +53,6 @@ const Dashboard = () => {
     setLoans([newLoan, ...loans]);
   };
 
-  const formatINRCurrency = (value) => 
-    value ? new Intl.NumberFormat('en-IN', { 
-      style: 'currency', 
-      currency: 'INR', 
-      currencyDisplay: 'symbol',
-      maximumFractionDigits: 0 
-    }).format(Number(value)) : '₹0';
-
   const pendingLoans = loans.filter((loan) => loan.status === 'pending');
   const activeLoans = loans.filter((loan) => loan.status === 'approved');
   const completedLoans = loans.filter((loan) => loan.status === 'completed');
@@ -70,90 +68,20 @@ const Dashboard = () => {
         <div className="mt-6 grid grid-cols-1 gap-6 lg:grid-cols-3">
           <div className="lg:col-span-1">
             <div className="sticky top-6">
-              <div className="bg-white p-6 rounded-lg shadow-md mb-6">
-                <div className="flex items-center">
-                  <div className="h-12 w-12 rounded-full bg-advance-light-purple flex items-center justify-center">
-                    <span className="text-advance-dark-purple font-medium text-lg">
-                      {user?.name.charAt(0)}
-                    </span>
-                  </div>
-                  <div className="ml-4">
-                    <h2 className="text-lg font-semibold">{user?.name}</h2>
-                    <p className="text-gray-500 text-sm">Employee ID: {user?.id}</p>
-                  </div>
-                </div>
-                <div className="border-t mt-4 pt-4">
-                  <div className="flex justify-between">
-                    <span className="text-gray-500">Monthly Salary</span>
-                    <span className="font-medium">${user?.salary || 0}</span>
-                  </div>
-                </div>
-              </div>
-              
-              <div className="bg-white p-4 rounded-lg shadow-md mb-6">
-                <nav>
-                  <ul>
-                    <li>
-                      <button
-                        onClick={() => setActiveTab('overview')}
-                        className={`w-full text-left px-4 py-2 rounded-md ${
-                          activeTab === 'overview'
-                            ? 'bg-advance-light-purple text-advance-dark-purple font-medium'
-                            : 'hover:bg-gray-100'
-                        }`}
-                      >
-                        Overview
-                      </button>
-                    </li>
-                    <li>
-                      <button
-                        onClick={() => setActiveTab('new-application')}
-                        className={`w-full text-left px-4 py-2 rounded-md ${
-                          activeTab === 'new-application'
-                            ? 'bg-advance-light-purple text-advance-dark-purple font-medium'
-                            : 'hover:bg-gray-100'
-                        }`}
-                      >
-                        New Loan Application
-                      </button>
-                    </li>
-                    <li>
-                      <button
-                        onClick={() => setActiveTab('loan-history')}
-                        className={`w-full text-left px-4 py-2 rounded-md ${
-                          activeTab === 'loan-history'
-                            ? 'bg-advance-light-purple text-advance-dark-purple font-medium'
-                            : 'hover:bg-gray-100'
-                        }`}
-                      >
-                        Loan History
-                      </button>
-                    </li>
-                  </ul>
-                </nav>
-              </div>
+              <UserProfileCard user={user} />
+              <DashboardNavigation activeTab={activeTab} setActiveTab={setActiveTab} />
             </div>
           </div>
           
           <div className="lg:col-span-2">
             {activeTab === 'overview' && (
               <>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-                  <div className="bg-white p-4 rounded-lg shadow-md">
-                    <h3 className="text-sm font-medium text-gray-500">Pending Requests</h3>
-                    <p className="text-2xl font-bold">{pendingLoans.length}</p>
-                  </div>
-                  
-                  <div className="bg-white p-4 rounded-lg shadow-md">
-                    <h3 className="text-sm font-medium text-gray-500">Active Loans</h3>
-                    <p className="text-2xl font-bold">{activeLoans.length}</p>
-                  </div>
-                  
-                  <div className="bg-white p-4 rounded-lg shadow-md">
-                    <h3 className="text-sm font-medium text-gray-500">Outstanding Balance</h3>
-                    <p className="text-2xl font-bold">${totalOutstanding.toFixed(2)}</p>
-                  </div>
-                </div>
+                <DashboardStats 
+                  pendingLoans={pendingLoans} 
+                  activeLoans={activeLoans} 
+                  totalOutstanding={totalOutstanding}
+                  formatINRCurrency={formatINRCurrency}
+                />
                 
                 {activeLoans.length > 0 && (
                   <LoanHistoryTable loans={activeLoans} title="Active Loans" />
@@ -166,18 +94,7 @@ const Dashboard = () => {
                 )}
                 
                 {activeLoans.length === 0 && pendingLoans.length === 0 && (
-                  <div className="mt-6 bg-white p-6 rounded-lg shadow-md text-center">
-                    <h2 className="text-xl font-semibold mb-3">Need a Salary Advance?</h2>
-                    <p className="text-gray-500 mb-4">
-                      You currently have no active or pending loan requests
-                    </p>
-                    <button
-                      onClick={() => setActiveTab('new-application')}
-                      className="bg-advance-purple text-white py-2 px-6 rounded-md hover:bg-advance-dark-purple transition duration-200"
-                    >
-                      Apply Now
-                    </button>
-                  </div>
+                  <QuickApplyCard setActiveTab={setActiveTab} />
                 )}
               </>
             )}

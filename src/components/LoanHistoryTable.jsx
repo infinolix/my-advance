@@ -1,5 +1,6 @@
 
 import React from 'react';
+import { formatINRCurrency } from '../utils/formatters';
 
 const LoanHistoryTable = ({ loans, title = "Loan History" }) => {
   if (!loans || loans.length === 0) {
@@ -20,9 +21,6 @@ const LoanHistoryTable = ({ loans, title = "Loan History" }) => {
       day: 'numeric'
     });
   };
-
-  const formatINRCurrency = (value) => 
-    value ? Number(value).toLocaleString("en-IN", { style: "currency", currency: "INR" }) : "₹0.00";
 
   const getStatusBadge = (status) => {
     const statusStyles = {
