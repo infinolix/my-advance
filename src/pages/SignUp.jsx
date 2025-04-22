@@ -35,6 +35,12 @@ const SignUp = () => {
       return;
     }
 
+    if (mobile.length !== 10) {
+      toast.error('Please enter a valid 10-digit mobile number');
+      setIsLoading(false);
+      return;
+    }
+
     const userData = {
       name,
       email,
@@ -47,16 +53,21 @@ const SignUp = () => {
       userData.salary = Number(salary);
     }
 
-    const success = register(userData);
-    setIsLoading(false);
-    if (success) {
-      toast.success('Account created successfully');
-      navigate('/dashboard');
+    try {
+      const success = await register(userData);
+      setIsLoading(false);
+      if (success) {
+        toast.success('Account created successfully');
+        navigate('/dashboard');
+      }
+    } catch (error) {
+      toast.error('Failed to create account');
+      setIsLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4">
+    <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4 py-16">
       <div className="w-full max-w-md bg-white rounded-lg shadow p-6 space-y-6">
         <h1 className="text-2xl font-bold text-center">Create Your Account</h1>
         
