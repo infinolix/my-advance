@@ -1,192 +1,129 @@
+
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
+import { Link, useLocation } from 'react-router-dom';
+import { Menu, X } from 'lucide-react';
+import { Button } from "@/components/ui/button";
+import { useAuth } from '@/context/AuthContext';
 
 const Navbar = () => {
-  const { user, logout } = useAuth();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const location = useLocation();
+  const { user, logout } = useAuth();
+  
+  const isActive = (path) => {
+    return location.pathname === path;
+  };
+
+  const navItems = [
+    { name: 'Home', path: '/' },
+    { name: 'Dashboard', path: '/dashboard', authRequired: true },
+    { name: 'Admin', path: '/admin', adminOnly: true }
+  ];
+
+  const filteredNavItems = navItems.filter(item => {
+    if (item.adminOnly && (!user || user.role !== 'admin')) return false;
+    if (item.authRequired && !user) return false;
+    return true;
+  });
 
   return (
-    <nav className="bg-white shadow fixed w-full z-50">
+    <nav className="bg-white shadow-sm">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-16">
-          <div className="flex">
-            <div className="flex-shrink-0 flex items-center">
-              <Link to="/" className="flex items-center">
-                <span className="text-2xl font-bold bg-clip-text text-transparent advance-gradient">
-                  MyAdvance
-                </span>
-              </Link>
-            </div>
-            <div className="hidden sm:ml-6 sm:flex sm:space-x-8">
-              <Link
-                to="/"
-                className="border-transparent text-gray-500 hover:border-advance-purple hover:text-advance-purple inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium"
-              >
-                Home
-              </Link>
-              {user && (
-                <Link
-                  to="/dashboard"
-                  className="border-transparent text-gray-500 hover:border-advance-purple hover:text-advance-purple inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium"
-                >
-                  Dashboard
-                </Link>
-              )}
-              {user?.role === 'admin' && (
-                <Link
-                  to="/admin"
-                  className="border-transparent text-gray-500 hover:border-advance-purple hover:text-advance-purple inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium"
-                >
-                  Admin
-                </Link>
-              )}
-            </div>
+          <div className="flex items-center">
+            <Link to="/" className="flex-shrink-0 flex items-center">
+              <span className="text-2xl font-bold text-transparent bg-clip-text advance-gradient">MyAdvance</span>
+            </Link>
           </div>
-          <div className="hidden sm:ml-6 sm:flex sm:items-center">
-            {user ? (
-              <div className="flex items-center space-x-4">
-                <span className="text-sm font-medium text-gray-700">
-                  Hi, {user.name}
-                </span>
-                <button
-                  onClick={logout}
-                  className="px-4 py-2 text-sm font-medium text-advance-purple bg-white hover:bg-advance-purple hover:text-white border border-advance-purple rounded-md transition-colors duration-300"
-                >
-                  Logout
-                </button>
-              </div>
+          
+          {/* Desktop menu */}
+          <div className="hidden md:ml-6 md:flex md:items-center md:space-x-4">
+            {filteredNavItems.map((item) => (
+              <Link
+                key={item.name}
+                to={item.path}
+                className={`px-3 py-2 rounded-md text-sm font-medium ${
+                  isActive(item.path)
+                    ? 'text-advance-purple'
+                    : 'text-gray-700 hover:text-advance-purple'
+                }`}
+              >
+                {item.name}
+              </Link>
+            ))}
+          </div>
+          
+          <div className="hidden md:ml-6 md:flex md:items-center md:space-x-4">
+            {!user ? (
+              <>
+                <Link to="/login">
+                  <Button variant="outline">Log in</Button>
+                </Link>
+                <Link to="/signup">
+                  <Button>Sign up</Button>
+                </Link>
+              </>
             ) : (
-              <div className="space-x-2">
-                <Link
-                  to="/login"
-                  className="px-4 py-2 text-sm font-medium text-advance-purple bg-white hover:bg-advance-purple hover:text-white border border-advance-purple rounded-md transition-colors duration-300"
-                >
-                  Login
-                </Link>
-                <Link
-                  to="/signup"
-                  className="px-4 py-2 text-sm font-medium text-white bg-advance-purple hover:bg-advance-dark-purple border border-advance-purple rounded-md transition-colors duration-300"
-                >
-                  Register Now
-                </Link>
-              </div>
+              <Button variant="outline" onClick={logout}>Logout</Button>
             )}
           </div>
-          <div className="-mr-2 flex items-center sm:hidden">
+          
+          {/* Mobile menu button */}
+          <div className="flex items-center md:hidden">
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-advance-purple"
+              className="inline-flex items-center justify-center p-2 rounded-md text-gray-700 hover:text-advance-purple focus:outline-none"
             >
               <span className="sr-only">Open main menu</span>
               {mobileMenuOpen ? (
-                <svg
-                  className="block h-6 w-6"
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                  aria-hidden="true"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M6 18L18 6M6 6l12 12"
-                  />
-                </svg>
+                <X className="block h-6 w-6" aria-hidden="true" />
               ) : (
-                <svg
-                  className="block h-6 w-6"
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                  aria-hidden="true"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M4 6h16M4 12h16M4 18h16"
-                  />
-                </svg>
+                <Menu className="block h-6 w-6" aria-hidden="true" />
               )}
             </button>
           </div>
         </div>
       </div>
-
+      
+      {/* Mobile menu, show/hide based on mobileMenuOpen state */}
       {mobileMenuOpen && (
-        <div className="sm:hidden">
-          <div className="pt-2 pb-3 space-y-1">
-            <Link
-              to="/"
-              className="block pl-3 pr-4 py-2 border-l-4 border-transparent text-base font-medium text-gray-600 hover:bg-gray-50 hover:border-advance-purple hover:text-advance-purple"
-            >
-              Home
-            </Link>
-            {user && (
+        <div className="md:hidden">
+          <div className="px-2 pt-2 pb-3 space-y-1">
+            {filteredNavItems.map((item) => (
               <Link
-                to="/dashboard"
-                className="block pl-3 pr-4 py-2 border-l-4 border-transparent text-base font-medium text-gray-600 hover:bg-gray-50 hover:border-advance-purple hover:text-advance-purple"
+                key={item.name}
+                to={item.path}
+                className={`block px-3 py-2 rounded-md text-base font-medium ${
+                  isActive(item.path)
+                    ? 'text-advance-purple'
+                    : 'text-gray-700 hover:text-advance-purple'
+                }`}
+                onClick={() => setMobileMenuOpen(false)}
               >
-                Dashboard
+                {item.name}
               </Link>
-            )}
-            {user?.role === 'admin' && (
-              <Link
-                to="/admin"
-                className="block pl-3 pr-4 py-2 border-l-4 border-transparent text-base font-medium text-gray-600 hover:bg-gray-50 hover:border-advance-purple hover:text-advance-purple"
-              >
-                Admin
-              </Link>
-            )}
-          </div>
-          <div className="pt-4 pb-3 border-t border-gray-200">
-            {user ? (
-              <div className="flex items-center px-4">
-                <div className="flex-shrink-0">
-                  <div className="h-10 w-10 rounded-full bg-advance-light-purple flex items-center justify-center">
-                    <span className="text-advance-dark-purple font-medium">
-                      {user.name.charAt(0)}
-                    </span>
-                  </div>
-                </div>
-                <div className="ml-3">
-                  <div className="text-base font-medium text-gray-800">{user.name}</div>
-                  <div className="text-sm font-medium text-gray-500">{user.email}</div>
-                </div>
-                <button
-                  onClick={logout}
-                  className="ml-auto flex-shrink-0 bg-white p-1 rounded-full text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-advance-purple"
-                >
-                  <span className="sr-only">Logout</span>
-                  <svg
-                    className="h-6 w-6"
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
-                    />
-                  </svg>
-                </button>
-              </div>
-            ) : (
-              <div className="px-4">
-                <Link
-                  to="/login"
-                  className="block w-full py-2 text-center text-sm font-medium text-advance-purple bg-white hover:bg-advance-purple hover:text-white border border-advance-purple rounded-md transition-colors duration-300"
-                >
-                  Login
+            ))}
+            
+            {!user ? (
+              <div className="mt-4 space-y-2">
+                <Link to="/login" onClick={() => setMobileMenuOpen(false)}>
+                  <Button variant="outline" className="w-full">Log in</Button>
+                </Link>
+                <Link to="/signup" onClick={() => setMobileMenuOpen(false)}>
+                  <Button className="w-full">Sign up</Button>
                 </Link>
               </div>
+            ) : (
+              <Button
+                variant="outline"
+                className="w-full mt-4"
+                onClick={() => {
+                  logout();
+                  setMobileMenuOpen(false);
+                }}
+              >
+                Logout
+              </Button>
             )}
           </div>
         </div>

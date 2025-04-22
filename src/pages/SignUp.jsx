@@ -1,126 +1,215 @@
 
 import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
-import { toast } from "sonner";
-import AccountCredentials from '../components/signup/AccountCredentials';
-import MobileInput from '../components/signup/MobileInput';
-import SalaryInput from '../components/signup/SalaryInput';
+import { useNavigate, Link } from 'react-router-dom';
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardFooter, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { useAuth } from '@/context/AuthContext';
+import AccountCredentials from '@/components/signup/AccountCredentials';
+import MobileInput from '@/components/signup/MobileInput';
+import SalaryInput from '@/components/signup/SalaryInput';
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
+import { toast } from 'sonner';
 
 const SignUp = () => {
+  const { register } = useAuth();
+  const navigate = useNavigate();
+  const [currentStep, setCurrentStep] = useState("account");
+  
+  // Account info
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [confirm, setConfirm] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  
+  // Contact info
   const [mobile, setMobile] = useState('');
+  
+  // Employment info
   const [includeSalary, setIncludeSalary] = useState(false);
   const [salary, setSalary] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
-  const { register } = useAuth();
-  const navigate = useNavigate();
+  
+  const [loading, setLoading] = useState(false);
+
+  const handleNext = () => {
+    if (currentStep === "account") {
+      // Validate account info
+      if (!name || !email || !password || !confirmPassword) {
+        toast.error('Please fill in all required fields');
+        return;
+      }
+      
+      if (password !== confirmPassword) {
+        toast.error('Passwords do not match');
+        return;
+      }
+      
+      if (password.length < 6) {
+        toast.error('Password must be at least 6 characters long');
+        return;
+      }
+      
+      setCurrentStep("contact");
+    } else if (currentStep === "contact") {
+      // Validate contact info
+      if (!mobile || mobile.length !== 10) {
+        toast.error('Please enter a valid 10-digit mobile number');
+        return;
+      }
+      
+      setCurrentStep("employment");
+    }
+  };
+
+  const handlePrevious = () => {
+    if (currentStep === "contact") {
+      setCurrentStep("account");
+    } else if (currentStep === "employment") {
+      setCurrentStep("contact");
+    }
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setIsLoading(true);
     
-    if (!name || !email || !password || !confirm || !mobile) {
-      toast.error('Please fill all required fields');
-      setIsLoading(false);
+    // Final validation
+    if (includeSalary && !salary) {
+      toast.error('Please enter your salary');
       return;
     }
     
-    if (password !== confirm) {
-      toast.error('Passwords do not match');
-      setIsLoading(false);
-      return;
-    }
-
-    if (mobile.length !== 10) {
-      toast.error('Please enter a valid 10-digit mobile number');
-      setIsLoading(false);
-      return;
-    }
-
-    const userData = {
-      name,
-      email,
-      password,
-      mobile,
-      role: 'employee'
-    };
-    
-    if (includeSalary && salary) {
-      userData.salary = Number(salary);
-    }
-
+    setLoading(true);
     try {
-      const success = await register(userData);
-      setIsLoading(false);
+      // Register the user
+      const userData = {
+        name,
+        email,
+        password,
+        mobile,
+        salary: includeSalary ? parseInt(salary, 10) : null
+      };
+      
+      const success = register(userData);
+      
       if (success) {
-        toast.success('Account created successfully');
         navigate('/dashboard');
       }
-    } catch (error) {
-      toast.error('Failed to create account');
-      setIsLoading(false);
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4 py-16">
-      <div className="w-full max-w-md bg-white rounded-lg shadow p-6 space-y-6">
-        <h1 className="text-2xl font-bold text-center">Create Your Account</h1>
-        
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <AccountCredentials
-            name={name}
-            email={email}
-            password={password}
-            confirm={confirm}
-            onNameChange={setName}
-            onEmailChange={setEmail}
-            onPasswordChange={setPassword}
-            onConfirmChange={setConfirm}
-          />
-          
-          <MobileInput
-            mobile={mobile}
-            onMobileChange={setMobile}
-          />
-
-          <div className="flex items-center">
-            <input
-              type="checkbox"
-              id="includeSalary"
-              className="h-4 w-4 text-advance-purple focus:ring-advance-purple border-gray-300 rounded"
-              checked={includeSalary}
-              onChange={() => setIncludeSalary(!includeSalary)}
-            />
-            <label htmlFor="includeSalary" className="ml-2 block text-sm text-gray-900">
-              Include Monthly Salary?
-            </label>
-          </div>
-
-          <SalaryInput
-            includeSalary={includeSalary}
-            salary={salary}
-            onSalaryChange={setSalary}
-          />
-          
-          <button
-            type="submit"
-            disabled={isLoading}
-            className="w-full py-2.5 px-4 bg-advance-purple hover:bg-advance-dark-purple text-white font-medium rounded-lg text-center transition-colors"
-          >
-            {isLoading ? "Please wait..." : "Sign Up"}
-          </button>
-        </form>
-
-        <div className="text-center text-sm">
-          Already have an account?{" "}
-          <Link to="/login" className="text-advance-purple hover:underline">Log in</Link>
-        </div>
-      </div>
+    <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4 sm:px-6 lg:px-8 py-12">
+      <Card className="max-w-md w-full">
+        <CardHeader>
+          <CardTitle className="text-center text-2xl font-bold">Create your account</CardTitle>
+          <CardDescription className="text-center">
+            Start accessing your earned salary today
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <Tabs value={currentStep} className="w-full">
+            <TabsList className="grid grid-cols-3 mb-8">
+              <TabsTrigger value="account" disabled>Account</TabsTrigger>
+              <TabsTrigger value="contact" disabled>Contact</TabsTrigger>
+              <TabsTrigger value="employment" disabled>Employment</TabsTrigger>
+            </TabsList>
+            
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <TabsContent value="account">
+                <AccountCredentials
+                  name={name}
+                  email={email}
+                  password={password}
+                  confirm={confirmPassword}
+                  onNameChange={setName}
+                  onEmailChange={setEmail}
+                  onPasswordChange={setPassword}
+                  onConfirmChange={setConfirmPassword}
+                />
+                
+                <div className="pt-4">
+                  <Button 
+                    type="button" 
+                    onClick={handleNext}
+                    className="w-full"
+                  >
+                    Next
+                  </Button>
+                </div>
+              </TabsContent>
+              
+              <TabsContent value="contact">
+                <MobileInput
+                  mobile={mobile}
+                  onMobileChange={setMobile}
+                />
+                
+                <div className="pt-4 flex justify-between">
+                  <Button 
+                    type="button"
+                    variant="outline" 
+                    onClick={handlePrevious}
+                  >
+                    Back
+                  </Button>
+                  <Button 
+                    type="button" 
+                    onClick={handleNext}
+                  >
+                    Next
+                  </Button>
+                </div>
+              </TabsContent>
+              
+              <TabsContent value="employment">
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <Label htmlFor="include-salary">Include salary information</Label>
+                    <Switch 
+                      id="include-salary" 
+                      checked={includeSalary} 
+                      onCheckedChange={setIncludeSalary}
+                    />
+                  </div>
+                  
+                  <SalaryInput
+                    includeSalary={includeSalary}
+                    salary={salary}
+                    onSalaryChange={setSalary}
+                  />
+                  
+                  <div className="pt-4 flex justify-between">
+                    <Button 
+                      type="button"
+                      variant="outline" 
+                      onClick={handlePrevious}
+                    >
+                      Back
+                    </Button>
+                    <Button 
+                      type="submit"
+                      disabled={loading}
+                    >
+                      {loading ? 'Creating account...' : 'Create Account'}
+                    </Button>
+                  </div>
+                </div>
+              </TabsContent>
+            </form>
+          </Tabs>
+        </CardContent>
+        <CardFooter className="flex justify-center">
+          <p className="text-sm text-gray-600">
+            Already have an account?{' '}
+            <Link to="/login" className="text-advance-purple hover:text-advance-dark-purple font-medium">
+              Log in
+            </Link>
+          </p>
+        </CardFooter>
+      </Card>
     </div>
   );
 };
