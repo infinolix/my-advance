@@ -1,11 +1,23 @@
 
-import React from "react";
+import React from 'react';
+import Navbar from '../components/Navbar';
+import Hero from '../components/home/Hero';
+import Features from '../components/home/Features';
+import HowItWorks from '../components/home/HowItWorks';
+import CTA from '../components/home/CTA';
+import Footer from '../components/home/Footer';
 
-const Index = () => (
-  <main className="min-h-[60vh] flex flex-col items-center justify-center py-20">
-    <h1 className="text-3xl font-bold mb-4">Welcome to MyApp</h1>
-    <p className="text-gray-600">This is the fresh starting point for your React project.</p>
-  </main>
-);
+const Index = () => {
+  return (
+    <div className="min-h-screen bg-white">
+      <Navbar />
+      <Hero />
+      <Features />
+      <HowItWorks />
+      <CTA />
+      <Footer />
+    </div>
+  );
+};
 
 export default Index;

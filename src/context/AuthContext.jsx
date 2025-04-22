@@ -1,14 +1,13 @@
 
 import React, { createContext, useState, useContext, useEffect } from 'react';
 import { toast } from 'sonner';
-import { useNavigate } from 'react-router-dom';
 
 const AuthContext = createContext();
 
 // Mock user data
 const MOCK_USERS = [
-  { id: '1', name: 'John Doe', email: 'john@example.com', password: 'password', role: 'employee', salary: 50000 },
-  { id: '2', name: 'Jane Smith', email: 'jane@example.com', password: 'password', role: 'employee', salary: 60000 },
+  { id: '1', name: 'John Doe', email: 'john@example.com', password: 'password', role: 'employee', salary: 5000 },
+  { id: '2', name: 'Jane Smith', email: 'jane@example.com', password: 'password', role: 'employee', salary: 6000 },
   { id: '3', name: 'Admin User', email: 'admin@example.com', password: 'admin123', role: 'admin' }
 ];
 
@@ -49,41 +48,15 @@ export const AuthProvider = ({ children }) => {
   };
 
   const register = (userData) => {
-    // Check if email already exists
-    const existingUser = MOCK_USERS.find(u => u.email === userData.email);
-    if (existingUser) {
-      toast.error('Email already registered');
-      return false;
-    }
-    
     // In a real app, you would send this to your backend
-    // For now, we'll just add it to our mock users
-    const newUser = {
-      id: (MOCK_USERS.length + 1).toString(),
-      ...userData,
-      role: 'employee'
-    };
-    
-    // Add to mock users (in a real app, this would be a database operation)
-    MOCK_USERS.push(newUser);
-    
     toast.success('Registration successful!');
-    
     // Simulate successful registration by logging in
     const { email, password } = userData;
     return login(email, password);
   };
 
   return (
-    <AuthContext.Provider value={{ 
-      user, 
-      login, 
-      logout, 
-      register, 
-      loading,
-      isAuthenticated: !!user,
-      isAdmin: user?.role === 'admin'
-    }}>
+    <AuthContext.Provider value={{ user, login, logout, register, loading }}>
       {children}
     </AuthContext.Provider>
   );
