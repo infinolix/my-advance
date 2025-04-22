@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
@@ -14,7 +13,6 @@ const SignUp = () => {
   const [password, setPassword] = useState('');
   const [confirm, setConfirm] = useState('');
   const [mobile, setMobile] = useState('');
-  // New fields
   const [department, setDepartment] = useState('');
   const [position, setPosition] = useState('');
   const [pan, setPan] = useState('');
@@ -87,6 +85,8 @@ const SignUp = () => {
     return new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 }).format(Number(value));
   };
 
+  const loanEligibility = salary ? Math.floor(Number(salary) / 2) : 0;
+
   return (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4 py-16">
       <div className="w-full max-w-md bg-white rounded-lg shadow p-6 space-y-6">
@@ -108,7 +108,6 @@ const SignUp = () => {
             onMobileChange={setMobile}
           />
 
-          {/* Department Field */}
           <div>
             <label htmlFor="department" className="block mb-2 text-sm font-medium flex items-center">
               <Briefcase className="w-4 h-4 mr-2" />
@@ -124,7 +123,6 @@ const SignUp = () => {
             />
           </div>
 
-          {/* Position Field */}
           <div>
             <label htmlFor="position" className="block mb-2 text-sm font-medium flex items-center">
               <Briefcase className="w-4 h-4 mr-2" />
@@ -140,7 +138,6 @@ const SignUp = () => {
             />
           </div>
 
-          {/* PAN Number */}
           <div>
             <label htmlFor="pan" className="block mb-2 text-sm font-medium flex items-center">
               <Badge className="w-4 h-4 mr-2" />
@@ -162,7 +159,6 @@ const SignUp = () => {
             }
           </div>
 
-          {/* Monthly Salary in INR */}
           <div>
             <label htmlFor="salary" className="block mb-2 text-sm font-medium flex items-center">
               <IndianRupee className="w-4 h-4 mr-2" />
@@ -178,10 +174,15 @@ const SignUp = () => {
               required
             />
             {salary && (
-              <span className="text-sm text-green-600 font-semibold">
+              <span className="text-sm text-green-600 font-semibold block">
                 {formatINR(salary)}
               </span>
             )}
+            <div className="mt-1 text-xs text-blue-700 font-medium">
+              {salary
+                ? `You are eligible for a loan up to ${formatINR(loanEligibility)} (50% of your salary).`
+                : 'Enter your monthly salary to see your eligible loan amount.'}
+            </div>
           </div>
 
           <button
