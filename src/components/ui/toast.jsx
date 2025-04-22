@@ -104,9 +104,12 @@ const ToastDescription = React.forwardRef(
 )
 ToastDescription.displayName = ToastPrimitives.Description.displayName
 
-let ToastProps = React.ComponentPropsWithoutRef(Toast)
+// Instead of using React.ComponentPropsWithoutRef which is a TypeScript utility
+// Define ToastProps as a regular JavaScript object
+const ToastProps = {}
 
-let ToastActionElement = React.ReactElement(ToastAction)
+// Similarly, instead of using React.ReactElement, define ToastActionElement as a component reference
+const ToastActionElement = ToastAction
 
 export {
   ToastProps,
