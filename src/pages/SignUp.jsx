@@ -5,7 +5,8 @@ import { useAuth } from '../context/AuthContext';
 import { toast } from "sonner";
 import AccountCredentials from '../components/signup/AccountCredentials';
 import MobileInput from '../components/signup/MobileInput';
-import SalaryInput from '../components/signup/SalaryInput';
+import { Input } from "@/components/ui/input";
+import { Briefcase, Badge, IndianRupee } from "lucide-react";
 
 const SignUp = () => {
   const [name, setName] = useState('');
@@ -13,7 +14,10 @@ const SignUp = () => {
   const [password, setPassword] = useState('');
   const [confirm, setConfirm] = useState('');
   const [mobile, setMobile] = useState('');
-  const [includeSalary, setIncludeSalary] = useState(false);
+  // New fields
+  const [department, setDepartment] = useState('');
+  const [position, setPosition] = useState('');
+  const [pan, setPan] = useState('');
   const [salary, setSalary] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const { register } = useAuth();
@@ -22,13 +26,13 @@ const SignUp = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
-    
-    if (!name || !email || !password || !confirm || !mobile) {
+
+    if (!name || !email || !password || !confirm || !mobile || !department || !position || !pan || !salary) {
       toast.error('Please fill all required fields');
       setIsLoading(false);
       return;
     }
-    
+
     if (password !== confirm) {
       toast.error('Passwords do not match');
       setIsLoading(false);
@@ -41,17 +45,29 @@ const SignUp = () => {
       return;
     }
 
+    if (!/^[A-Z]{5}[0-9]{4}[A-Z]{1}$/.test(pan)) {
+      toast.error('Please enter a valid PAN number (e.g. ABCDE1234F)');
+      setIsLoading(false);
+      return;
+    }
+
+    if (Number(salary) < 0) {
+      toast.error('Salary must be a positive number');
+      setIsLoading(false);
+      return;
+    }
+
     const userData = {
       name,
       email,
       password,
       mobile,
+      department,
+      position,
+      pan,
+      salary: Number(salary),
       role: 'employee'
     };
-    
-    if (includeSalary && salary) {
-      userData.salary = Number(salary);
-    }
 
     try {
       const success = await register(userData);
@@ -66,11 +82,15 @@ const SignUp = () => {
     }
   };
 
+  const formatINR = (value) => {
+    if (!value) return '';
+    return new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 }).format(Number(value));
+  };
+
   return (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4 py-16">
       <div className="w-full max-w-md bg-white rounded-lg shadow p-6 space-y-6">
         <h1 className="text-2xl font-bold text-center">Create Your Account</h1>
-        
         <form onSubmit={handleSubmit} className="space-y-4">
           <AccountCredentials
             name={name}
@@ -82,31 +102,88 @@ const SignUp = () => {
             onPasswordChange={setPassword}
             onConfirmChange={setConfirm}
           />
-          
+
           <MobileInput
             mobile={mobile}
             onMobileChange={setMobile}
           />
 
-          <div className="flex items-center">
-            <input
-              type="checkbox"
-              id="includeSalary"
-              className="h-4 w-4 text-advance-purple focus:ring-advance-purple border-gray-300 rounded"
-              checked={includeSalary}
-              onChange={() => setIncludeSalary(!includeSalary)}
-            />
-            <label htmlFor="includeSalary" className="ml-2 block text-sm text-gray-900">
-              Include Monthly Salary?
+          {/* Department Field */}
+          <div>
+            <label htmlFor="department" className="block mb-2 text-sm font-medium flex items-center">
+              <Briefcase className="w-4 h-4 mr-2" />
+              Department
             </label>
+            <Input
+              id="department"
+              type="text"
+              placeholder="e.g. Finance, HR"
+              value={department}
+              onChange={e => setDepartment(e.target.value)}
+              required
+            />
           </div>
 
-          <SalaryInput
-            includeSalary={includeSalary}
-            salary={salary}
-            onSalaryChange={setSalary}
-          />
-          
+          {/* Position Field */}
+          <div>
+            <label htmlFor="position" className="block mb-2 text-sm font-medium flex items-center">
+              <Briefcase className="w-4 h-4 mr-2" />
+              Position
+            </label>
+            <Input
+              id="position"
+              type="text"
+              placeholder="e.g. Manager, Analyst"
+              value={position}
+              onChange={e => setPosition(e.target.value)}
+              required
+            />
+          </div>
+
+          {/* PAN Number */}
+          <div>
+            <label htmlFor="pan" className="block mb-2 text-sm font-medium flex items-center">
+              <Badge className="w-4 h-4 mr-2" />
+              PAN Number
+            </label>
+            <Input
+              id="pan"
+              type="text"
+              maxLength={10}
+              placeholder="ABCDE1234F"
+              value={pan}
+              onChange={e => setPan(e.target.value.toUpperCase().replace(/[^A-Z0-9]/gi, '').slice(0, 10))}
+              required
+            />
+            {pan && !/^[A-Z]{5}[0-9]{4}[A-Z]{1}$/.test(pan) &&
+              <p className="text-xs text-red-500 mt-1">
+                Please enter a valid PAN number (e.g. ABCDE1234F)
+              </p>
+            }
+          </div>
+
+          {/* Monthly Salary in INR */}
+          <div>
+            <label htmlFor="salary" className="block mb-2 text-sm font-medium flex items-center">
+              <IndianRupee className="w-4 h-4 mr-2" />
+              Monthly Salary (INR)
+            </label>
+            <Input
+              id="salary"
+              type="number"
+              min="0"
+              placeholder="e.g. 40000"
+              value={salary}
+              onChange={e => setSalary(e.target.value.replace(/[^\d]/g, ""))}
+              required
+            />
+            {salary && (
+              <span className="text-sm text-green-600 font-semibold">
+                {formatINR(salary)}
+              </span>
+            )}
+          </div>
+
           <button
             type="submit"
             disabled={isLoading}

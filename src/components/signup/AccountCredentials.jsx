@@ -16,7 +16,6 @@ const AccountCredentials = ({ name, email, password, confirm, onNameChange, onEm
           required
         />
       </div>
-      
       <div>
         <label htmlFor="email" className="block mb-2 text-sm font-medium">Email</label>
         <Input
@@ -28,7 +27,6 @@ const AccountCredentials = ({ name, email, password, confirm, onNameChange, onEm
           required
         />
       </div>
-      
       <div>
         <label htmlFor="password" className="block mb-2 text-sm font-medium">Password</label>
         <Input
@@ -39,7 +37,6 @@ const AccountCredentials = ({ name, email, password, confirm, onNameChange, onEm
           required
         />
       </div>
-      
       <div>
         <label htmlFor="confirm" className="block mb-2 text-sm font-medium">Confirm Password</label>
         <Input
