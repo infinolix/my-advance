@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Navigate } from 'react-router-dom';
 import Navbar from '../components/Navbar';
@@ -6,7 +5,6 @@ import LoanApplicationForm from '../components/LoanApplicationForm';
 import LoanHistoryTable from '../components/LoanHistoryTable';
 import { useAuth } from '../context/AuthContext';
 
-// Mock data for active loans and loan history
 const initialLoans = [
   {
     id: 'loan-001',
@@ -37,12 +35,10 @@ const Dashboard = () => {
   const [loans, setLoans] = useState(initialLoans);
   const [activeTab, setActiveTab] = useState('overview');
 
-  // If not logged in, redirect to login
   if (!loading && !user) {
     return <Navigate to="/login" />;
   }
   
-  // If user is admin, redirect to admin dashboard
   if (user?.role === 'admin') {
     return <Navigate to="/admin" />;
   }
@@ -51,12 +47,18 @@ const Dashboard = () => {
     setLoans([newLoan, ...loans]);
   };
 
-  // Filter loans by status
+  const formatINRCurrency = (value) => 
+    value ? new Intl.NumberFormat('en-IN', { 
+      style: 'currency', 
+      currency: 'INR', 
+      currencyDisplay: 'symbol',
+      maximumFractionDigits: 0 
+    }).format(Number(value)) : '₹0';
+
   const pendingLoans = loans.filter((loan) => loan.status === 'pending');
   const activeLoans = loans.filter((loan) => loan.status === 'approved');
   const completedLoans = loans.filter((loan) => loan.status === 'completed');
   
-  // Calculate total outstanding
   const totalOutstanding = activeLoans.reduce((sum, loan) => sum + loan.amount, 0);
 
   return (
@@ -66,10 +68,8 @@ const Dashboard = () => {
         <h1 className="text-2xl font-bold text-gray-900">Employee Dashboard</h1>
         
         <div className="mt-6 grid grid-cols-1 gap-6 lg:grid-cols-3">
-          {/* Left sidebar */}
           <div className="lg:col-span-1">
             <div className="sticky top-6">
-              {/* User profile summary */}
               <div className="bg-white p-6 rounded-lg shadow-md mb-6">
                 <div className="flex items-center">
                   <div className="h-12 w-12 rounded-full bg-advance-light-purple flex items-center justify-center">
@@ -90,7 +90,6 @@ const Dashboard = () => {
                 </div>
               </div>
               
-              {/* Navigation */}
               <div className="bg-white p-4 rounded-lg shadow-md mb-6">
                 <nav>
                   <ul>
@@ -136,11 +135,9 @@ const Dashboard = () => {
             </div>
           </div>
           
-          {/* Main content */}
           <div className="lg:col-span-2">
             {activeTab === 'overview' && (
               <>
-                {/* Summary Cards */}
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
                   <div className="bg-white p-4 rounded-lg shadow-md">
                     <h3 className="text-sm font-medium text-gray-500">Pending Requests</h3>
@@ -158,19 +155,16 @@ const Dashboard = () => {
                   </div>
                 </div>
                 
-                {/* Active Loans */}
                 {activeLoans.length > 0 && (
                   <LoanHistoryTable loans={activeLoans} title="Active Loans" />
                 )}
                 
-                {/* Pending Loans */}
                 {pendingLoans.length > 0 && (
                   <div className="mt-6">
                     <LoanHistoryTable loans={pendingLoans} title="Pending Requests" />
                   </div>
                 )}
                 
-                {/* Quick Apply Button */}
                 {activeLoans.length === 0 && pendingLoans.length === 0 && (
                   <div className="mt-6 bg-white p-6 rounded-lg shadow-md text-center">
                     <h2 className="text-xl font-semibold mb-3">Need a Salary Advance?</h2>
