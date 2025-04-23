@@ -1,11 +1,9 @@
+
 import * as React from "react"
 import * as LabelPrimitive from "@radix-ui/react-label"
 import { Slot } from "@radix-ui/react-slot"
 import {
   Controller,
-  ControllerProps,
-  FieldPath,
-  FieldValues,
   FormProvider,
   useFormContext,
 } from "react-hook-form"
@@ -15,20 +13,9 @@ import { Label } from "@/components/ui/label"
 
 const Form = FormProvider
 
-type FormFieldContextValue<
-  TFieldValues extends FieldValues = FieldValues,
-  TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>
-> = {
-  name: TName
-}
+const FormFieldContext = React.createContext({})
 
-const FormFieldContext = React.createContext<FormFieldContextValue>(
-  {} as FormFieldContextValue
-)
-
-const FormField = (
-  props
-) => {
+const FormField = (props) => {
   return (
     <FormFieldContext.Provider value={{ name: props.name }}>
       <Controller {...props} />
@@ -59,13 +46,7 @@ const useFormField = () => {
   }
 }
 
-type FormItemContextValue = {
-  id: string
-}
-
-const FormItemContext = React.createContext<FormItemContextValue>(
-  {} as FormItemContextValue
-)
+const FormItemContext = React.createContext({})
 
 const FormItem = React.forwardRef(
   ({ className, ...props }, ref) => {
@@ -150,6 +131,12 @@ const FormMessage = React.forwardRef(
   )
 })
 FormMessage.displayName = "FormMessage"
+
+// Define ToastProps as a regular JavaScript object
+const ToastProps = {}
+
+// Similarly, define ToastActionElement as a component reference
+const ToastActionElement = React.forwardRef(() => {})
 
 export {
   useFormField,
